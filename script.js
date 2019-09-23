@@ -18,7 +18,7 @@ new Vue({
             fetch(this.api_url+"/persons/delete/"+id, {
                 method: "DELETE"
             })
-            window.location.reload(false); 
+            setTimeout(function(){ window.location.reload(false); }, 500);
         },
         createPerson(){
             if(!this.newPerson.birthday) {
@@ -37,7 +37,7 @@ new Vue({
                     "Content-Type": "application/json"
                 }
             })
-            window.location.reload(false); 
+            setTimeout(function(){ window.location.reload(false); }, 500);
         }
     },
     mounted () {
