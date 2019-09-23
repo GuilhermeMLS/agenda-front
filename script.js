@@ -1,9 +1,11 @@
-new Vue({
+
+new Vue({    
     el: "#app",
     data: {
         info : [],
         birthdays : null,
         today: new Date(),
+        settings: null,
         newPerson: {
             name: '',
             company: '',
@@ -13,7 +15,7 @@ new Vue({
     },
     methods: {
         deletePerson(id, i){
-            fetch("http://localhost/teste_mm/persons/delete/"+id, {
+            fetch(this.api_url+"/persons/delete/"+id, {
                 method: "DELETE"
             })
             window.location.reload(false); 
@@ -28,7 +30,7 @@ new Vue({
             if(!this.newPerson.email) {
                 delete this.newPerson.email
             }
-            fetch("http://localhost/teste_mm/persons/create", {
+            fetch(this.api_url+"/persons/create", {
                 method: "POST",
                 body: JSON.stringify(this.newPerson),
                 headers : {
@@ -39,7 +41,8 @@ new Vue({
         }
     },
     mounted () {
-        fetch("http://localhost/teste_mm/persons/index")
+        this.api_url = settings.api_url
+        fetch(this.api_url+"/persons/index")
             .then(response => response.json())
             .then((data) => {
                 data.map(function($e){
@@ -47,7 +50,8 @@ new Vue({
                 })
                 this.info = data;
             })
-        fetch("http://localhost/teste_mm/calendar/getbirthdays", {
+            
+        fetch(this.api_url+"/calendar/getbirthdays", {
             body: JSON.stringify({
                 "month" : this.today.getMonth()+1,
                 "day" : this.today.getDate()
@@ -59,6 +63,7 @@ new Vue({
         })
             .then(response => response.json())
             .then((data) => {
+                
                 this.birthdays = data;
             })
     },
@@ -89,7 +94,7 @@ new Vue({
                     <tbody>
                         <tr v-for="i, index in info">
                             <th scope="row">{{ i.id }}</th>
-                            <td><a :href="'http://localhost/teste_mm_front/show.html?user='+i.id">{{ i.name }}</a></td>
+                            <td><a :href="'show.html?user='+i.id">{{ i.name }}</a></td>
                             <td v-if="i.phones[0] != ' '">{{ i.phones[0] }}</td>
                             <td v-if="i.phones[0] == ' '"><span class="text-secondary"> Nenhum telefone </span></td>
                             <td><button class="btn btn-danger" v-on:click="deletePerson(i.id, index)">x</button></td>
@@ -135,6 +140,7 @@ new Vue({
                     <a class="btn btn-info" v-on:click="createPerson()">
                         <span class="text-light">Enviar</span>
                     </a>
+                    <p class="text-muted"> {dev-tip}: experimente inserir um usuário que faz aniversário hoje para testar o alerta de aniversariante! </p>
                 </form>
             </div>
         </div>

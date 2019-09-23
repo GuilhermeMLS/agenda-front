@@ -35,6 +35,7 @@
 
     <!-- JavaScript (Opcional) -->
     <!-- jQuery primeiro, depois Popper.js, depois Bootstrap JS -->
+    <script src="./settings.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
@@ -47,16 +48,16 @@
                     <div v-if="editPerson === person.id" style="max-width:400px">
                         <form>
                             <div class="form-row">
-                                <input class="form-control" v-model="person.name" /><br><br>
+                                <input placeholder="Nome completo" class="form-control" v-model="person.name" /><br><br>
                             </div>
                             <div class="form-row">
-                                <input class="form-control" v-model="person.birthday" /><br><br>
+                                <input type='date' placeholder="Aniversário" class="form-control" v-model="person.birthday" /><br><br>
                             </div>
                             <div class="form-row">
-                                 <input class="form-control" v-model="person.company" /><br><br>
+                                 <input placeholder="Empresa" class="form-control" v-model="person.company" /><br><br>
                             </div>
                             <div class="form-row">
-                                <input class="form-control" v-model="person.email" /><br><br>
+                                <input placeholder="E-mail" class="form-control" v-model="person.email" /><br><br>
                             </div>
                             <div class="form-row">
                                 <a class="btn btn-info" v-on:click="updatePerson()"><span class="text-light">Enviar</span></a>
@@ -115,7 +116,14 @@
                     var id = this.person.id
                     delete person.id
                     delete person.phones
-                    fetch("http://localhost/teste_mm/persons/edit/"+id, {
+                    if(this.person.name == '') {
+                        alert('O campo nome é obrigatório')
+                        return
+                    }
+                    if(this.person.birthday == '') {
+                        delete this.person.birthday
+                    }
+                    fetch(this.api_url+"/persons/edit/"+id, {
                         method: "PUT",
                         body: JSON.stringify(person),
                         headers : {
@@ -128,7 +136,7 @@
                 },
                 newPhone() {
                     this.newPhoneObj.user_id = this.person.id
-                    fetch("http://localhost/teste_mm/phones/create", {
+                    fetch(this.api_url+"/phones/create", {
                         method: "POST",
                         body: JSON.stringify(this.newPhoneObj),
                         headers : {
@@ -138,7 +146,7 @@
                     window.location.reload(false); 
                 },
                 deletePhone(id, i){
-                    fetch("http://localhost/teste_mm/phones/delete/"+id, {
+                    fetch(this.api_url+"/phones/delete/"+id, {
                         method: "DELETE"
                     }).then(() => {
                         this.person.phones.splice(i, 1)
@@ -147,7 +155,7 @@
                 updatePhone(phone) {
                     id = phone.id
                     delete phone.id,
-                    fetch("http://localhost/teste_mm/phones/edit/"+id, {
+                    fetch(this.api_url+"/phones/edit/"+id, {
                         method: "PUT",
                         body: JSON.stringify(phone),
                         headers : {
@@ -159,6 +167,7 @@
                 }
             },
             mounted () {
+                this.api_url = settings.api_url;
                 var getUrlParameter = function getUrlParameter(sParam) {
                     var sPageURL = window.location.search.substring(1),
                         sURLVariables = sPageURL.split('&'),
@@ -173,7 +182,7 @@
                         }
                     }
                 };
-                fetch("http://localhost/teste_mm/persons/index/"+getUrlParameter('user'))
+                fetch(this.api_url+"/persons/index/"+getUrlParameter('user'))
                     .then(response => response.json())
                     .then((data) => {
                         this.person = data;
