@@ -52,8 +52,36 @@
                 Não há dicas disponíveis. <br>
                 <span class="text-muted">Contatos com nomes parecidos podem ser mesclados.</span>
             </p>
+            <br>
+            <ul class="list-group">
+                <p class="text-secondary">
+                    Dados sobre seus contatos:
+                </p>
+                <li class = "list-group-item list-group-item-light">
+                    Quantidade de contatos: {{report[0].count_persons}}
+                </li>
+                <li class = "list-group-item list-group-item-light">
+                    Quantidade de aniversários neste mês: {{report[1].birthdays_this_month}}
+                </li>
+                <li class = "list-group-item list-group-item-light">
+                    Quantidade de aniversários nos próximos 30 dias: {{report[2].birthdays_next_30_days}}
+                </li>
+                <li class = "list-group-item list-group-item-light">
+                    Média de idade: {{report[3].age_average}}
+                </li>
+                <li class = "list-group-item list-group-item-light">
+                    Quantidade de contatos por DDD:
+                    <ul>
+                        <li v-for="r in report[4].count_ddd">
+                            {{Object.keys(r)[0]}} ➡️ {{Object.values(r)[0]}} contatos
+                        </li>
+                    </ul>
+                </li>
+                
+            </ul>
+
         </div>
-        
+        <br><br>
     </div>
 
     <!-- JavaScript (Opcional) -->
@@ -68,7 +96,8 @@
             el: "#app",
             data: {
                 tips: [],
-                api_url: null
+                api_url: null,
+                report: null
             },
             methods: {
                 mix (ti, i) {
@@ -96,6 +125,11 @@
                     .then(response => response.json())
                     .then((data) => {
                         this.tips = data;
+                    })
+                fetch(this.api_url+'/reports/getReports')
+                    .then(response => response.json())
+                    .then((data) => {
+                        this.report = data;
                     })
             }
         })
